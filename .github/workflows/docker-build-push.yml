@@ -29,7 +29,7 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/flask-mailhog-web:latest ./app
           docker push ${{ secrets.DOCKER_USERNAME }}/flask-mailhog-web:latest
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/mailhog-arm:latest ./mailhog
-          docker push ${{ secrets.DOCKER_USERNAME }}/mailhog-arm:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/mailhog-multi:latest ./mailhog
+          docker push ${{ secrets.DOCKER_USERNAME }}/mailhog-multi:latest
 
 
