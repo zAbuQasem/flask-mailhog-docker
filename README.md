@@ -4,14 +4,16 @@ A Dockerized Flask application that allows sending emails through a MailHog SMTP
 
 ---
 
-## Features
+# About This Project
 
-* Flask web app for sending emails
-* MailHog with **Basic Auth** for testing emails
-* MySQL database to store sent emails
-* Low-privilege user for the Flask app
-* Fully Dockerized; just run `docker compose up --build`
-* Internal network communication only (no host ports required)
+This is a **custom Dockerized Flask application** for sending and testing emails. It includes:
+
+- **Flask web app**: Send emails dynamically from a web interface.
+- **MailHog SMTP server**: Captures emails for testing with optional Basic Auth.
+- **MySQL database**: Stores all sent emails using a low-privilege user.
+- **Custom Dockerfiles**: Both the Flask app and MailHog are containerized using **custom Dockerfiles**, giving full control over the build process over multiple platforms.
+- **Internal Docker network**: All services communicate internally, so no ports need to be exposed to the host.
+- **CI/CD ready**: GitHub Actions workflow to build, test, and optionally push images to Docker Hub.
 
 ---
 
