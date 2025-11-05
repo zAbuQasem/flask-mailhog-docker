@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.env
+*.log
+*.sqlite3
+db_data/
+*.db
+*.DS_Store
+*.pyc
+__pycache__/
+auth/pass
+
