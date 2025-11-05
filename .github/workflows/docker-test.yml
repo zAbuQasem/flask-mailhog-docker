@@ -11,21 +11,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: rootpass
-          MYSQL_DATABASE: emailsdb
-          MYSQL_USER: flaskuser
-          MYSQL_PASSWORD: flaskpass
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -40,21 +25,26 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker Compose services
+      - name: Set up Docker Compose network
         run: |
-          docker-compose -f docker-compose.yml build
+          docker network create my-bridge-network || true
+
+      - name: Build Docker Compose services
+        run: docker-compose -f docker-compose.yml build
 
       - name: Start Docker Compose services
         run: |
           docker-compose -f docker-compose.yml up -d
-          # Wait a few seconds for containers to initialize
           sleep 15
 
       - name: Run test: Check Flask can connect to MySQL and MailHog
         run: |
-          docker exec flask-mailhog-web python3 -c "
-import os, mysql.connector, smtplib
-# Test MySQL
+          docker exec flask-mailhog-web python3 - <<'PYTHON_CODE'
+import os
+import mysql.connector
+import smtplib
+
+# Test MySQL connection
 conn = mysql.connector.connect(
     host=os.getenv('DB_HOST', 'mysql-db'),
     user=os.getenv('DB_USER', 'flaskuser'),
@@ -66,11 +56,12 @@ cursor.execute('SELECT 1')
 print('MySQL connected:', cursor.fetchone())
 cursor.close()
 conn.close()
-# Test MailHog
+
+# Test MailHog SMTP
 s = smtplib.SMTP(os.getenv('MAIL_SERVER', 'mailhog-lol'), int(os.getenv('MAIL_PORT', 1025)))
 print('MailHog SMTP OK:', s.noop())
 s.quit()
-"
+PYTHON_CODE
 
       - name: Shut down Docker Compose
         run: docker-compose -f docker-compose.yml down
