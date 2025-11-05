@@ -41,30 +41,30 @@ jobs:
       - name: Run test- Check Flask can connect to MySQL and MailHog
         run: |
           docker exec flask-mailhog-web python3 - <<'PYTHON_CODE'
-import os
-import mysql.connector
-import smtplib
+            import os
+            import mysql.connector
+            import smtplib
 
 # Test MySQL connection
-conn = mysql.connector.connect(
-    host=os.getenv('DB_HOST', 'mysql-db'),
-    user=os.getenv('DB_USER', 'flaskuser'),
-    password=os.getenv('DB_PASSWORD', 'flaskpass'),
-    database=os.getenv('DB_NAME', 'emailsdb')
-)
-cursor = conn.cursor()
-cursor.execute('SELECT 1')
-print('MySQL connected:', cursor.fetchone())
-cursor.close()
-conn.close()
+            conn = mysql.connector.connect(
+                host=os.getenv('DB_HOST', 'mysql-db'),
+                user=os.getenv('DB_USER', 'flaskuser'),
+                password=os.getenv('DB_PASSWORD', 'flaskpass'),
+                database=os.getenv('DB_NAME', 'emailsdb')
+            )
+            cursor = conn.cursor()
+            cursor.execute('SELECT 1')
+            print('MySQL connected:', cursor.fetchone())
+            cursor.close()
+            conn.close()
 
 # Test MailHog SMTP
-s = smtplib.SMTP(os.getenv('MAIL_SERVER', 'mailhog-lol'), int(os.getenv('MAIL_PORT', 1025)))
-print('MailHog SMTP OK:', s.noop())
-s.quit()
-PYTHON_CODE
+            s = smtplib.SMTP(os.getenv('MAIL_SERVER', 'mailhog-lol'), int(os.getenv('MAIL_PORT', 1025)))
+            print('MailHog SMTP OK:', s.noop())
+            s.quit()
+          PYTHON_CODE
 
       - name: Shut down Docker Compose
         run: |
-	  docker-compose -f docker-compose.yml down
+          docker-compose -f docker-compose.yml down
 
