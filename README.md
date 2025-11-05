@@ -68,7 +68,7 @@ docker compose up --build
 This will:
 
 * Build and run the Flask app (`web`)
-* Build and run MailHog with basic auth (`mailhog-lol`)
+* Build and run MailHog with basic auth (`mailhog`)
 * Run MySQL database with a low-privilege user (`flaskuser`)
 
 ---
@@ -119,7 +119,7 @@ Since no ports are exposed:
 ```bash
 docker exec -it flask-mailhog-web bash
 # Inside container, test SMTP
-python3 -c "import smtplib; s=smtplib.SMTP('mailhog-lol',1025); print(s.noop())"
+python3 -c "import smtplib; s=smtplib.SMTP('mailhog',1025); print(s.noop())"
 ```
 
 * MySQL access:
