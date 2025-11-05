@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: flask-mailhog-web
     environment:
-      - MAIL_SERVER=mailhog-lol
+      - MAIL_SERVER=mailhog
       - MAIL_PORT=1025
       - DB_HOST=mysql-db
       - DB_USER=flaskuser
@@ -23,7 +23,7 @@ services:
     build:
       context: /Users/layannasereddin/test-task
       dockerfile: Dockerfile
-    container_name: mailhog-lol
+    container_name: mailhog
     command: ["MailHog", "-auth-file=/auth/pass"]
     volumes:
       - ./auth:/auth
