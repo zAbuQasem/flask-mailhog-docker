@@ -30,7 +30,7 @@ jobs:
           docker network create my-bridge-network || true
 
       - name: Build Docker Compose services
-        run: 
+        run: |
 	  docker-compose -f docker-compose.yml build
 
       - name: Start Docker Compose services
@@ -65,6 +65,6 @@ s.quit()
 PYTHON_CODE
 
       - name: Shut down Docker Compose
-        run: 
+        run: |
 	  docker-compose -f docker-compose.yml down
 
