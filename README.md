@@ -1,6 +1,6 @@
 # Flask-MailHog-Docker
 
-A Dockerized Flask application that allows sending emails through a MailHog SMTP server and stores sent emails in a MySQL database. Everything runs internally on a Docker bridge network — no ports need to be exposed.
+A Dockerized Flask application that allows sending emails through a MailHog SMTP server and stores sent emails in a MySQL database. Everything runs internally on a Docker bridge network — no ports need to be exposed. Application can be optionally deployable on Minikube.
 
 ---
 
@@ -14,6 +14,7 @@ This is a **custom Dockerized Flask application** for sending and testing emails
 - **Custom Dockerfiles**: Both the Flask app and MailHog are containerized using **custom Dockerfiles**, giving full control over the build process over multiple platforms.
 - **Internal Docker network**: All services communicate internally, so no ports need to be exposed to the host.
 - **CI/CD ready**: GitHub Actions workflow to build, test, and optionally push images to Docker Hub.
+- **Minikube deployment ready**: Kubernetes manifests are provided to deploy the Flask app, MailHog, and MySQL locally on a Minikube cluster. 
 
 ---
 
@@ -27,10 +28,17 @@ project-root/
 │   ├── templates/
 │   │   └── index.html
 │   └── Dockerfile
-├── mailhog/            # Custom MailHog Dockerfile
+├── mailhog/              # Custom MailHog Dockerfile
 │   └── Dockerfile
 ├── auth/                 # MailHog auth file (not committed)
 │   └── pass
+├── kubernetes/           # Kubernetes manifests
+│   ├── app-deployment.yaml
+│   ├── app-service.yaml
+│   ├── mail-deployment.yaml
+│   ├── mail-service.yaml
+│   ├── sql-deployment.yaml
+│   └── sql-service.yaml
 └── docker-compose.yml
 ```
 
@@ -132,6 +140,98 @@ mysql> SELECT * FROM emails;
 ```
 
 ---
+
+## Deploying on Minikube
+
+This project can also be deployed locally on Kubernetes using Minikube. All required manifests are included (`Deployment`, `Service`, and network definitions).
+
+### What’s Included
+
+| Component     | File                                              | Description                                                               |
+| ------------- | ------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Flask App** | `app-deployment.yaml`, `app-service.yaml`     | Deploys the Flask web application and exposes it via a ClusterIP service. |
+| **MailHog**   | `mail-deployment.yaml`, `mail-service.yaml` | Deploys MailHog for email capture, optionally with Basic Auth.            |
+| **MySQL**     | `sql-deployment.yaml`, `sql-service.yaml`     | Deploys MySQL with persistent storage and a low-privilege user.           |
+
+All components communicate through Kubernetes internal networking — no external ports are exposed by default.
+
+### Steps to Deploy
+
+#### 1. Start Minikube
+
+```bash
+minikube start
+```
+
+#### 2. Load Your Local Docker Images into Minikube
+
+```bash
+minikube image load lnasereddin/flask-mailhog-web:latest
+minikube image load lnasereddin/mailhog-multi:latest
+```
+
+#### 3. Apply the Kubernetes Manifests
+
+```bash
+kubectl apply -f sql-deployment.yaml
+kubectl apply -f sql-service.yaml
+kubectl apply -f mail-deployment.yaml
+kubectl apply -f mail-service.yaml
+kubectl apply -f app-deployment.yaml
+kubectl apply -f app-service.yaml
+```
+
+Or apply them all at once:
+
+```bash
+kubectl apply -f k8s/
+```
+
+#### 4. Verify Everything Is Running
+
+```bash
+kubectl get pods
+kubectl get svc
+```
+
+#### 5. Access the MailHog UI
+
+```bash
+kubectl port-forward svc/mail-service 1025:1025 8025:8025
+```
+
+```
+http://localhost:8025
+```
+
+#### 6. (Optional) Access the MySQL Database
+
+```bash
+kubectl port-forward svc/database-service 10000:3306
+mysql -u flaskuser -h 127.0.0.1 -P 10000 -p
+```
+
+#### 7. (Optional) Access the Flask Web App
+
+```bash
+kubectl port-forward svc/app-service 5001:5001
+```
+
+```
+http://localhost:5001
+```
+Or
+
+```bash
+minikube service app-service
+```
+
+### 🧹 Cleanup
+
+```bash
+kubectl delete -f k8s/
+minikube stop
+```
 
 ## License
 
