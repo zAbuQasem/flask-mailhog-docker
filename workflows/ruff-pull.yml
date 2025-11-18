@@ -1,3 +1,4 @@
+name: Ruff Action PR
 on:
   pull_request:
     types: [opened, synchronize]
