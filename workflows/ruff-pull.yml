@@ -2,8 +2,6 @@ name: Ruff Action PR
 on:
   pull_request:
     types: [opened, synchronize]
-#    branches:
-#      - main
 jobs:
   lint:
     runs-on: ubuntu-latest
