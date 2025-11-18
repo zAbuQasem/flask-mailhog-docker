@@ -1,0 +1,20 @@
+name: Ruff Action PR
+on:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install Ruff
+        run: pip install ruff
+      - name: Run Ruff with Fix
+        run: ruff check . --fix
+      - name: Ruff Format
+        run: ruff format 
