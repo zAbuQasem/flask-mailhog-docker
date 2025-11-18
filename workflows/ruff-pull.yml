@@ -2,8 +2,8 @@ name: Ruff Action PR
 on:
   pull_request:
     types: [opened, synchronize]
-    branches:
-      - main
+#    branches:
+#      - main
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -22,3 +22,4 @@ jobs:
         run: ruff format 
 #testing idk
 #test2
+#test3
